@@ -96,23 +96,24 @@ def autoBinning_num(data,cols,method,bins):
                     return ('0'+str(i+1))[-2:]+'('+str(binList[i])+'_'+str(binList[i+1])+']'
     bin = pd.DataFrame(columns=['binList','pctList','groupList','binMethod'])
     for col in cols:
-        total = data[col].shape[0]
-        uniqs = data[col].nunique()
+        data_n = pd.DataFrame(data[col],columns=[col])
+        total = data_n[col].shape[0]
+        uniqs = data_n[col].nunique()
         bins_n = min(uniqs,bins,99)
         if method == 'frequency':
             # 方法1：无监督——等频分箱
-            binList = [round(np.percentile(data[~data[col].isnull()][col],min(100,100/bins_n*i)),2) for i in range(bins_n+1)][1:-1]
+            binList = [round(np.percentile(data_n[~data_n[col].isnull()][col],min(100,100/bins_n*i)),2) for i in range(bins_n+1)][1:-1]
         elif method == 'distance':
             # 方法2：无监督——等距分箱
-            umax = data[~data[col].isnull()][col].max()
-            umin = data[~data[col].isnull()][col].min()
+            umax = data_n[~data_n[col].isnull()][col].max()
+            umin = data_n[~data_n[col].isnull()][col].min()
             binList = [round(umin+i*((umax-umin)/bins_n),2) for i in range(bins_n+1)][1:-1]
         elif method == 'chi2':
             return 3
         elif method == 'bestks':
             return 4
-        binList = sorted(list(set(binList)))
-        data[col+'_bin'] = data[col].map(lambda x:ff(x,binList))
+        binList = sorted(list(set(binList))) if bins_n >1 else data_n[~data_n[col].isnull()][col].to_list()[:1]
+        data_n[col+'_bin'] = data_n[col].map(lambda x:ff(x,binList))
         pct = pd.DataFrame(data.groupby([col+'_bin']).size(),columns=['freq'])
         pct['pct'] = round(pct['freq']/total,4)
         pct['group'] = pct.index
