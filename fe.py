@@ -122,7 +122,7 @@ def autoBinning_num(data,cols,method,bins):
             return 4
         binList = sorted(list(set(binList))) if bins_n >1 else data_n[~data_n[col].isnull()][col].to_list()[:1]
         data_n[col+'_bin'] = data_n[col].map(lambda x:ff(x,binList))
-        pct = pd.DataFrame(data.groupby([col+'_bin']).size(),columns=['freq'])
+        pct = pd.DataFrame(data_n.groupby([col+'_bin']).size(),columns=['freq'])
         pct['pct'] = round(pct['freq']/total,4)
         pct['group'] = pct.index
         binDict = {'binList'  : str(binList),
