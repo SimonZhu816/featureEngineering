@@ -229,7 +229,7 @@ def calc_woeIV(data,cols,target):
         total = data.shape[0]
         bad = data[target].sum()
         good = total - bad
-        df = data.groupby([col+'_bin'])['target'].agg([np.size,np.sum])
+        df = data.groupby([col+'_bin'])[target].agg([np.size,np.sum])
         df.columns = ['total','bad']
         df['good'] = df['total']-df['bad']
         df['pct']  = df['total']/total
