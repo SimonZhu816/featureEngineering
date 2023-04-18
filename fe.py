@@ -275,3 +275,22 @@ def binPlot(data,cols):
         #     plt.text(x,y,'%.2f%%' % (y*100),ha='center',ya='top',fontsize=fonsize,rotation=45,alpha=.6)
         #     plt.text(x,z,'%.2f%%' % (y*100),ha='center',ya='bottom',fontsize=fonsize,rotation=45,alpha=.6)
         plt.show()
+        
+def mqcut(base,data,col,q):
+    # base : 分箱的基准数据
+    # data : 分箱的映射数据
+    # col  : 统计变量
+    # q    : 分箱组数，推荐5，10，20
+    import math
+    span = math.ceil(100/q)
+    cuts = [-0.1]+[round(np.percentile(base[col],i,interpolation='nearest'),4) for i in range(0,100,span)][1:]+[1.0 if base[col].max()<=1 else base[col].max()]
+    data = data.sort_values(by=[col])
+    data['cut'] = pd.cut(data[col],custs)
+    cuts = [s.left for s in sorted(set(data['cuts']))]
+    cuts.append(1.0 if base[col].max()<=1 else base[col].max())
+    data['duan'] = data['cut'].apply(lambda x:str(cuts.index(x.right)-1)+str(x))
+    data = data.sort_index()
+    return data['duan']
+                                            
+
+        ax2 =ax1.twinx()
