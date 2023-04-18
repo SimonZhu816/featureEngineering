@@ -291,6 +291,3 @@ def mqcut(base,data,col,q):
     data['duan'] = data['cut'].apply(lambda x:str(cuts.index(x.right)-1)+str(x))
     data = data.sort_index()
     return data['duan']
-                                            
-
-        ax2 =ax1.twinx()
