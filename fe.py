@@ -1,4 +1,3 @@
-```python
 # -*- coding: utf-8 -*-
 """
 Created on Mon Apr 20 12:21:36 2020
@@ -91,8 +90,8 @@ def EDA(data,featuredict):
 # 3.3a 利用先验知识构造  
 # 3.3b 构造统计量 
 # 3.3c 数据分箱
+# 针对数值型变量，选择不同的分箱方法，自动产生分箱列表binList
 def autoBinning_num(data,cols,method,bins):
-    # 针对数值型变量，选择不同的分箱方法，自动产生分箱列表binList
     def ff(x,binList):
         if x<=binList[0]:
             return '00(-inf_'+str(binList[0])+']'
@@ -134,8 +133,8 @@ def autoBinning_num(data,cols,method,bins):
     bin = bin.reset_index()
     return bin
 
+# 根据入参分箱列表binList映射分箱
 def mapBinning_num(data,cols,bin):
-    # 根据入参分箱列表binList映射分箱
     def ff(x,binList):
         if x<=binList[0]:
             return '00(-inf_'+str(binList[0])+']'
@@ -152,8 +151,8 @@ def mapBinning_num(data,cols,bin):
         data[col+'_bin'] = data[col].map(lambda x:ff(x,binList))
     return data
 
+# 针对字符型变量，选择不同的分箱方法，自动产生分箱列表binList
 def autoBinning_cat(data,cols,method,bins):
-    # 针对字符型变量，选择不同的分箱方法，自动产生分箱列表binList
     def ff(x,binList):
         if x not in binList:
             return ('0'+str(len(binList)))[-2:]+'{'+str(binList[-1])+'}'
@@ -181,8 +180,8 @@ def autoBinning_cat(data,cols,method,bins):
     bin= bin.reset_index()
     return bin
 
+# 根据入参分箱列表binList映射分箱
 def mapBinning_cat(data,cols,bin):
-    # 根据入参分箱列表binList映射分箱
     def ff(x,binList):
         if x not in binList:
             return ('0'+str(len(binList)))[-2:]+'{'+str(binList[-1])+'}'
@@ -199,6 +198,7 @@ def mapBinning_cat(data,cols,bin):
 # 第3.4节 特征筛选
 # 简介：
 # =============================================================================
+# 计算psi
 def calc_psi(data,cols,bin):
     # 从bins中读取变量col的基准分组和分布
     psiDicts={}
@@ -223,6 +223,7 @@ def calc_psi(data,cols,bin):
     psi = psi.reset_index()
     return psi
 
+# 计算woe和Iv
 def calc_woeIV(data,cols,target):
     woeIVDicts={}
     for col in cols:
@@ -246,6 +247,7 @@ def calc_woeIV(data,cols,target):
     woeIV = woeIV.reset_index()
     return woeIV
 
+# binPlot画图
 import matplotlib.font_manager as fm
 def binPlot(data,cols):
     myfont=fm.FontProperties(fname='simhei.ttf')
@@ -275,7 +277,8 @@ def binPlot(data,cols):
         #     plt.text(x,y,'%.2f%%' % (y*100),ha='center',ya='top',fontsize=fonsize,rotation=45,alpha=.6)
         #     plt.text(x,z,'%.2f%%' % (y*100),ha='center',ya='bottom',fontsize=fonsize,rotation=45,alpha=.6)
         plt.show()
-        
+
+# 等频分箱
 def mqcut(base,data,col,q):
     # base : 分箱的基准数据
     # data : 分箱的映射数据
