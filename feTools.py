@@ -288,7 +288,7 @@ def mqcut(base,data,col,q):
     span = math.ceil(100/q)
     cuts = [-0.1]+[round(np.percentile(base[col],i,interpolation='nearest'),4) for i in range(0,100,span)][1:]+[1.0 if base[col].max()<=1 else base[col].max()]
     data = data.sort_values(by=[col])
-    data['cut'] = pd.cut(data[col],custs)
+    data['cut'] = pd.cut(data[col],cuts)
     cuts = [s.left for s in sorted(set(data['cuts']))]
     cuts.append(1.0 if base[col].max()<=1 else base[col].max())
     data['duan'] = data['cut'].apply(lambda x:str(cuts.index(x.right)-1)+str(x))
@@ -303,7 +303,7 @@ def corrFilter(data,columns,corr_threshold):
     length = len(corr.columns)
     for i in range(length):
         fea = corr.columns[i]
-        drop_dict[feat] = 0
+        drop_dict[fea] = 0
         tmp1 = corr[fea].tail(length-i-1)
         tmp2 = tmp1[tmp1 > corr_threshold]
         drop_list = drop_list + list(tmp2.index)
@@ -313,6 +313,6 @@ def corrFilter(data,columns,corr_threshold):
     drop_df = pd.DataFrame([drop_dict]).T
     drop_df.columns = ['drop']
     corr = pd.DataFrame(corr,drop_df,how='left',left_index=True,right_index=True)
-   return corr,list(set(drop_list))
+    return corr,list(set(drop_list))
                    
                    
