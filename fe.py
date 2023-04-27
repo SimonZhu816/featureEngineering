@@ -278,7 +278,7 @@ def binPlot(data,cols):
         #     plt.text(x,z,'%.2f%%' % (y*100),ha='center',ya='bottom',fontsize=fonsize,rotation=45,alpha=.6)
         plt.show()
 
-# 等频分箱
+# 等频分箱改进版
 def mqcut(base,data,col,q):
     # base : 分箱的基准数据
     # data : 分箱的映射数据
@@ -294,3 +294,25 @@ def mqcut(base,data,col,q):
     data['duan'] = data['cut'].apply(lambda x:str(cuts.index(x.right)-1)+str(x))
     data = data.sort_index()
     return data['duan']
+
+# 高相关特征过滤
+def corrFilter(data,columns,corr_threshold):
+    corr = abs(data[columns].corr())
+    drop_list = []
+    drop_dict = {}
+    length = len(corr.columns)
+    for i in range(length):
+        fea = corr.columns[i]
+        drop_dict[feat] = 0
+        tmp1 = corr[fea].tail(length-i-1)
+        tmp2 = tmp1[tmp1 > corr_threshold]
+        drop_list = drop_list + list(tmp2.index)
+        
+    for col in list(set(drop_list)):
+        drop_dict[col] = 1
+    drop_df = pd.DataFrame([drop_dict]).T
+    drop_df.columns = ['drop']
+    corr = pd.DataFrame(corr,drop_df,how='left',left_index=True,right_index=True)
+   return corr,list(set(drop_list))
+                   
+                   
