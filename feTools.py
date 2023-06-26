@@ -109,7 +109,14 @@ def autoBinning_num(data,cols,method,bins):
         bins_n = min(uniqs,bins,99)
         if method == 'frequency':
             # 方法1：无监督——等频分箱
-            binList = [round(np.percentile(data_n[~data_n[col].isnull()][col],min(100,100/bins_n*i)),2) for i in range(bins_n+1)][1:-1]
+            if uniqs<bins:
+                binList = sorted(list(set(data_n[col].to_list())))
+                if len(binList) <=2:
+                    binList = binList[:-1]
+                else:
+                    binList = binList[1:-1]
+            else:
+                binList = [round(np.percentile(data_n[~data_n[col].isnull()][col],min(100,100/bins_n*i)),2) for i in range(bins_n+1)][1:-1]
         elif method == 'distance':
             # 方法2：无监督——等距分箱
             umax = data_n[~data_n[col].isnull()][col].max()
